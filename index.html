@@ -583,6 +583,16 @@ document.getElementById('toggleClinics').addEventListener('change', function() {
   }
 });
 
+// ---- Étoile: Parc Sainte-Marguerite ----
+const starIcon = L.divIcon({
+  className: '',
+  html: `<div style="font-size:30px;line-height:30px;color:#e53e3e;text-shadow:0 0 3px #fff,0 0 3px #fff,0 1px 4px rgba(0,0,0,0.4);">&#9733;</div>`,
+  iconSize: [30, 30], iconAnchor: [15, 15], popupAnchor: [0, -15],
+});
+L.marker([46.3432023, -72.5638711], { icon: starIcon, zIndexOffset: 2000 })
+  .addTo(map)
+  .bindPopup('<div style="font-weight:600;font-size:13px;">&#9733; Parc Sainte-Marguerite</div>');
+
 // ---- Opportunity zones overlay ----
 const zoneColors = ['#1565C0','#1565C0','#2196F3','#2196F3','#42A5F5','#42A5F5','#64B5F6','#64B5F6','#90CAF9','#90CAF9'];
 const zoneLayer = L.layerGroup().addTo(map);
