@@ -69,7 +69,15 @@ def format_sheet(api, ssid, n_rows, n_cols):
     sheet_id = api.get_sheet_id_by_name(ssid, "Sheet1") or 0
     forest = {"red": 0.141, "green": 0.208, "blue": 0.133}
     mint = {"red": 0.910, "green": 0.937, "blue": 0.925}
-    requests = [
+    # Drop any pre-existing banded ranges so re-runs don't 400 (idempotent).
+    meta = api._exec(api.sheets_service.spreadsheets().get(
+        spreadsheetId=ssid, includeGridData=False))
+    requests = []
+    for sh in meta.get("sheets", []):
+        if sh["properties"]["sheetId"] == sheet_id:
+            for br in sh.get("bandedRanges", []):
+                requests.append({"deleteBanding": {"bandedRangeId": br["bandedRangeId"]}})
+    requests += [
         {"repeatCell": {
             "range": {"sheetId": sheet_id, "startRowIndex": 0, "endRowIndex": 1},
             "cell": {"userEnteredFormat": {

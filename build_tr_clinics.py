@@ -51,6 +51,24 @@ def _fold(s):
 
 REGION_CITIES_FOLDED = {_fold(c) for c in REGION_CITIES}
 
+# Public / institutional employers to exclude: we only want PRIVATE clinics.
+# Matched as accent/case-folded substrings of the clinic name. CIUSSS/CISSS/CSSS
+# (réseau public), CHRTR/CHAUR/CSSSTR (hôpitaux), CRDP/CRDITED/"CR Interval"
+# (centres de réadaptation publics), CLSC, soutien à domicile, and the teaching
+# institutions (UQTR, université, collège/campus). NOTE: plain "réadaptation"
+# is NOT a keyword — private chains like "CBI Excellence Physio & Réadaptation"
+# must stay.
+PUBLIC_KEYWORDS = (
+    "ciusss", "cisss", "csss", "cssstr", "chrtr", "chaur", "crdp", "crdited",
+    "clsc", "centre hospitalier", "hopital", "soutien a domicile", "cr interval",
+    "universite", "uqtr", "college", "campus",
+)
+
+
+def is_public_institution(name):
+    folded = _fold(name)
+    return any(kw in folded for kw in PUBLIC_KEYWORDS)
+
 
 def permit_to_grad_year(permit):
     """OPPQ permit YYNNN -> 4-digit graduation year, or None if unusable.
@@ -104,6 +122,8 @@ def aggregate(rows):
     for (name, address, city, postal, phone, website, lat, lon, oppq_id,
          full_name, permit) in rows:
         if _fold(city) not in REGION_CITIES_FOLDED:
+            continue
+        if is_public_institution(name):
             continue
         lat = float(lat)
         lon = float(lon)
