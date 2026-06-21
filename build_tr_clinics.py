@@ -56,18 +56,20 @@ REGION_CITIES_FOLDED = {_fold(c) for c in REGION_CITIES}
 # (réseau public), CHRTR/CHAUR/CSSSTR (hôpitaux), CRDP/CRDITED/"CR Interval"
 # (centres de réadaptation publics), CLSC, soutien à domicile, and the teaching
 # institutions (UQTR, université, collège/campus). NOTE: plain "réadaptation"
-# is NOT a keyword — private chains like "CBI Excellence Physio & Réadaptation"
-# must stay.
+# is NOT a keyword (private chains like "CBI Excellence Physio & Réadaptation"
+# must stay). Keywords are folded the same way as the clinic name before
+# matching, so they can be written in proper French here.
 PUBLIC_KEYWORDS = (
     "ciusss", "cisss", "csss", "cssstr", "chrtr", "chaur", "crdp", "crdited",
-    "clsc", "centre hospitalier", "hopital", "soutien a domicile", "cr interval",
-    "universite", "uqtr", "college", "campus",
+    "clsc", "centre hospitalier", "hôpital", "soutien à domicile", "cr interval",
+    "université", "uqtr", "collège", "campus",
 )
+PUBLIC_KEYWORDS_FOLDED = tuple(_fold(kw) for kw in PUBLIC_KEYWORDS)
 
 
 def is_public_institution(name):
     folded = _fold(name)
-    return any(kw in folded for kw in PUBLIC_KEYWORDS)
+    return any(kw in folded for kw in PUBLIC_KEYWORDS_FOLDED)
 
 
 def permit_to_grad_year(permit):
