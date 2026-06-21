@@ -63,6 +63,41 @@ def to_rows(clinics):
     return rows
 
 
+def format_sheet(api, ssid, n_rows, n_cols):
+    """Brand the sheet: forest-green bold header, frozen header, banded rows,
+    auto-sized columns, and a filter so columns are sortable."""
+    sheet_id = api.get_sheet_id_by_name(ssid, "Sheet1") or 0
+    forest = {"red": 0.141, "green": 0.208, "blue": 0.133}
+    mint = {"red": 0.910, "green": 0.937, "blue": 0.925}
+    requests = [
+        {"repeatCell": {
+            "range": {"sheetId": sheet_id, "startRowIndex": 0, "endRowIndex": 1},
+            "cell": {"userEnteredFormat": {
+                "backgroundColor": forest,
+                "textFormat": {"foregroundColor": {"red": 1, "green": 1, "blue": 1},
+                               "bold": True, "fontSize": 11},
+                "verticalAlignment": "MIDDLE"}},
+            "fields": "userEnteredFormat(backgroundColor,textFormat,verticalAlignment)"}},
+        {"updateSheetProperties": {
+            "properties": {"sheetId": sheet_id,
+                           "gridProperties": {"frozenRowCount": 1}},
+            "fields": "gridProperties.frozenRowCount"}},
+        {"addBanding": {"bandedRange": {
+            "range": {"sheetId": sheet_id, "startRowIndex": 1,
+                      "startColumnIndex": 0, "endColumnIndex": n_cols},
+            "rowProperties": {"firstBandColor": {"red": 1, "green": 1, "blue": 1},
+                              "secondBandColor": mint}}}},
+        {"setBasicFilter": {"filter": {"range": {
+            "sheetId": sheet_id, "startRowIndex": 0,
+            "startColumnIndex": 0, "endColumnIndex": n_cols}}}},
+        {"autoResizeDimensions": {"dimensions": {
+            "sheetId": sheet_id, "dimension": "COLUMNS",
+            "startIndex": 0, "endIndex": n_cols}}},
+    ]
+    api._exec(api.sheets_service.spreadsheets().batchUpdate(
+        spreadsheetId=ssid, body={"requests": requests}))
+
+
 def main():
     clinics = load_clinics()
     rows = to_rows(clinics)
@@ -71,6 +106,7 @@ def main():
     title = f"Cliniques physio Trois-Rivières, {datetime.now():%Y-%m-%d}"
     ssid = api.create_spreadsheet(title)
     api.write_values(ssid, "Sheet1!A1", rows)
+    format_sheet(api, ssid, len(rows), len(HEADER))
     url = f"https://docs.google.com/spreadsheets/d/{ssid}/edit"
 
     # Read-back verification: row count and a sample clinic's oldest physio.
