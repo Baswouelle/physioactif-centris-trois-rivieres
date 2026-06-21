@@ -68,7 +68,7 @@ def main():
     rows = to_rows(clinics)
 
     api = SheetsAPI()
-    title = f"Cliniques physio Trois-Rivières — {datetime.now():%Y-%m-%d}"
+    title = f"Cliniques physio Trois-Rivières, {datetime.now():%Y-%m-%d}"
     ssid = api.create_spreadsheet(title)
     api.write_values(ssid, "Sheet1!A1", rows)
     url = f"https://docs.google.com/spreadsheets/d/{ssid}/edit"
