@@ -1,0 +1,29 @@
+{
+  "search_date": "2026-06-21T01:20:51.714811",
+  "count": 1,
+  "fresh_buildings": 0,
+  "seen_buildings": 1,
+  "listings": [
+    {
+      "mls_number": "27731188",
+      "title": "Local commercial à louer à Trois-Rivières, Mauricie, 2545, Rue de la Sidbec Sud, local B, 27731188",
+      "category": "Local Commercial",
+      "address": "Mauricie, 2545, Rue de la Sidbec Sud, local B",
+      "city": "Mauricie",
+      "price_value": "14.5",
+      "price_display": "",
+      "latitude": 46.33433621842414,
+      "longitude": -72.58215139154345,
+      "photo_count": 0,
+      "listing_url": "https://www.centris.ca/fr/local-commercial~a-louer~trois-rivieres/27731188",
+      "sqft": 1510,
+      "description": "Immeuble situé au coin de la rue Sidbec et St-Joseph, Endroit parfait pour implanter votre entrepri...",
+      "broker": "Gaillardetz Agence immobilière",
+      "area": "trois-rivieres",
+      "area_label": "Trois-Rivières (ville amalgamée)",
+      "transaction_type": "lease",
+      "first_seen": "2026-06-21",
+      "building_seen_before": true
+    }
+  ]
+}
