@@ -1,0 +1,42 @@
+name: Refresh Centris Listings
+
+on:
+  schedule:
+    # Tous les jours a 10am ET (14:00 UTC)
+    - cron: '0 14 * * *'
+  workflow_dispatch:
+
+jobs:
+  refresh:
+    runs-on: ubuntu-latest
+    permissions:
+      contents: write
+    env:
+      GMAIL_CLIENT_ID: ${{ secrets.GMAIL_CLIENT_ID }}
+      GMAIL_CLIENT_SECRET: ${{ secrets.GMAIL_CLIENT_SECRET }}
+      GMAIL_REFRESH_TOKEN: ${{ secrets.GMAIL_REFRESH_TOKEN }}
+
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+
+      - name: Install dependencies
+        run: pip install requests
+
+      - name: Run incremental refresh
+        run: python refresh_centris.py
+
+      - name: Commit and push if changed
+        run: |
+          git config user.name "github-actions[bot]"
+          git config user.email "github-actions[bot]@users.noreply.github.com"
+          git add index.html commercial_latest.json new_listings.json || true
+          git diff --cached --quiet || git commit -m "Refresh listings $(date -u +%Y-%m-%d)"
+          git push
+
+      - name: Send email if new listings
+        if: always()
+        run: python send_email.py
